@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { create_pin } from './public/js/pin.js';
+import { create_pin } from './pin.js';
 
 const scene = new THREE.Scene();
 
@@ -11,7 +11,7 @@ const scene = new THREE.Scene();
 const planeGeometry = new THREE.PlaneGeometry(30, 100);
 
 const textureLoader = new THREE.TextureLoader();
-const texture = textureLoader.load('./public/textures/floor.png');
+const texture = textureLoader.load('./textures/floor.png');
 const planeMaterial = new THREE.MeshPhongMaterial({ map: texture });
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 
@@ -53,7 +53,7 @@ let ball;
 
 // Load the ball model
 loader.load(
-  './public/model/ball/scene.gltf', // replace with the path to your ball model
+  './model/ball/scene.gltf', // replace with the path to your ball model
   function (gltf) {
     // When the model is loaded, add it to the scene
     ball = gltf.scene;

@@ -54,7 +54,7 @@ export function create_pin(x, y, z, scene, world) { // Adicione 'world' como par
     const textureLoader = new THREE.TextureLoader();
 
     // Load the texture
-    const texture = textureLoader.load('./public/textures/pin.png');
+    const texture = textureLoader.load('./textures/pin.png');
 
     // Create a bowling pin
     const pinGroup = new THREE.Group(); // Create a group to hold the pin parts
