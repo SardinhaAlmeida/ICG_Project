@@ -47,14 +47,14 @@
 // }
 
 import * as THREE from 'three';
-import * as CANNON from 'cannon'; // Importe o CANNON.js
+import * as CANNON from 'cannon-es'; // Importe o CANNON.js
 
 export function create_pin(x, y, z, scene, world) { // Adicione 'world' como parâmetro
 
     const textureLoader = new THREE.TextureLoader();
 
     // Load the texture
-    const texture = textureLoader.load('public/textures/pin.png');
+    const texture = textureLoader.load('./public/textures/pin.png');
 
     // Create a bowling pin
     const pinGroup = new THREE.Group(); // Create a group to hold the pin parts
