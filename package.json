@@ -1,0 +1,19 @@
+{
+    "dependencies": {
+        "cannon": "^0.6.2",
+        "cannon-es": "^0.20.0",
+        "gh-pages": "^6.1.1",
+        "three": "^0.163.0",
+        "three-js-csg": "^72.0.0"
+    },
+    "devDependencies": {
+        "@types/dat.gui": "^0.7.10",
+        "dat.gui": "^0.7.9",
+        "vite": "^5.2.9"
+    },
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    }
+}
