@@ -90,25 +90,20 @@ export function create_pin(x, y, z, scene, world) { // Adicione 'world' como par
     // Add the pin group to the scene
     scene.add(pinGroup);
 
-    // Create a physics body for the pin
-    const pinShape = new CANNON.Box(new CANNON.Vec3(0.1, 0.275, 0.1)); // Adjust the size as needed
+    // Create a CANNON body for the pin
+    const pinShape = new CANNON.Cylinder(0.1, 0.2, 0.8, 20);
     const pinBody = new CANNON.Body({
-        mass: 1, // Set the mass to a non-zero value to make the pin dynamic
-        shape: pinShape
+        mass: 1,
+        material: new CANNON.Material({ friction: 0.4, restitution: 0.6 })
     });
+    pinBody.addShape(pinShape);
     pinBody.position.set(x, y, z);
+    pinBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
     world.addBody(pinBody);
 
-    // Add userData to pinBody if it doesn't exist
-    if (!pinBody.userData) {
-        pinBody.userData = {};
-    }
-
-    // Adicionar o corpo físico ao grupo do pino
+    // Link THREE.js object with CANNON.js body
     pinGroup.userData.physicsBody = pinBody;
-
-    // Marcar este corpo como um pino
-    pinBody.userData.isPin = true;
+    
 
     return pinGroup;
 }
