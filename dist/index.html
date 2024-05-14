@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GuaxBowling</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <style>
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1000; /* Brings the canvas to the front */
+            display: none;
+        }
+    </style>
+    
+  <script type="module" crossorigin src="/ICG_Project/assets/index-CVW0HH5t.js"></script>
+</head>
+
+<body>
+    <!-- <div class="UI">
+			
+            <h1>GuaxBowling</h1>
+
+            <div class="items">
+                <div class="strength">
+                    <span>Shooting power</span>
+                    <div id="strength">
+                        <div id="barStrength"></div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <span>Space to start a shot, space again to throw</span>
+                    <span>Left and Right arrows to move shot</span>
+                    <span>Up and Down arrow to rotate shot</span>
+                </div>
+            </div>
+
+            <div class="credit">
+                <span>Credits</span>
+                <a href="https://www.linkedin.com/in/mathisangibaud/"
+                    ><span>Mathis Angibaud</span></a
+                >
+                <a href="https://www.linkedin.com/in/pierre-secher/"
+                    ><span>Pierre Secher</span></a
+                >
+            </div>
+    </div>
+
+    <canvas class="webgl"></canvas> -->
+    <!-- Start Page -->
+    <div id="startPage" class="start-page">
+        <h1 id="first">Welcome to GuaxBowling!</h1>
+        <div id="starting">
+            <label id="colorLabel" for="colorPicker">Choose the color of your emotional support avatar</label>
+            <input type="color" id="colorPicker" value="#ff0000">
+            <button id="startButton">Start Game</button>
+        </div>
+    </div> 
+
+    <!--Main Game Page (initially hidden) -->
+    <div id="gamePage" class="game-page" style="display: none;">
+        <div id="UI" class="UI">
+            <h1>GuaxBowling</h1>
+            <div class="items">
+                <div class="strength">
+                    <span>Shooting power</span>
+                    <div id="strength">
+                        <div id="barStrength"></div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <span>Space to start a shot, space again to throw</span>
+                    <span>Left and Right arrows to move shot</span>
+                    <span>Up and Down arrow to rotate shot</span>
+                </div>
+            </div>
+            <div class="credit">
+                <span>Credits</span>
+                <a href="https://www.linkedin.com/in/mathisangibaud/"><span>Mathis Angibaud</span></a>
+                <a href="https://www.linkedin.com/in/pierre-secher/"><span>Pierre Secher</span></a>
+            </div>
+        </div>
+        <canvas id="canvas" class="webgl"></canvas>
+    </div>
+</body>
