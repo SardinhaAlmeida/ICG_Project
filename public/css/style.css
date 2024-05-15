@@ -139,7 +139,7 @@ body {
 }
 
 .start-page {
-    background-image: url('../public/textures/wallpaper.jpg');
+    background-image: url('../wallpaper.jpg');
     background-repeat: no-repeat;
     background-position: center center;
     background-attachment: fixed;
