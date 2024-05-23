@@ -28,6 +28,7 @@ class Bowling {
         this.pinRows = 3;
 
         this.throwIndex = 0;
+        
 
         const canvas = document.querySelector(".webgl")
         // canvas.style.width = '100%';
@@ -40,8 +41,11 @@ class Bowling {
             canvas: canvas,
             antialias: true,
         });
-
+        
         this.renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
+        this.renderer.setSize(sizes.width, sizes.height);
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
 
         this.loadTexture();
 
@@ -53,6 +57,7 @@ class Bowling {
             }
         );
         this.ball = this.createSphere(this.ballMaterial);
+        this.ball.castShadow = true;
         this.ballThrown = false;
         this.ballStrength = -80;
         this.ballRotation = 0;
@@ -184,7 +189,7 @@ class Bowling {
                                 } catch (error) {
                                     console.error('Error during throw processing:', error);
                                 }
-                            }, 5000); // Corrected the string "5000" to number 5000
+                            }, 2000); // Corrected the string "5000" to number 5000
                         }
                         break;
 
@@ -277,7 +282,6 @@ class Bowling {
 
 
                 const mesh = new THREE.Mesh(geometry, material);
-                mesh.castShadow = true;
                 mesh.receiveShadow = true;
 
                 this.scene.add(mesh);
