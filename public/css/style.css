@@ -155,6 +155,44 @@ body {
     padding-bottom: 40px; 
 }
 
+#gameOverPopup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border: 2px solid black;
+    z-index: 1000; /* Ensure this is on top */
+}
+
+#message {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: black;
+    z-index: 1003;
+}
+
+#restartButton {
+    cursor: pointer;
+    z-index: 1003; /* Ensure this is on top */
+    pointer-events: all;
+
+}
+
+#throwNumber {
+    position: absolute;
+    bottom: 30px;
+    right: 10px;
+    font-size: 24px;
+    background: white;
+    color: black;
+    padding: 5px;
+    border: 1px solid black;
+    z-index: 1004; /* Ensure this is on top */
+}
+
 #starting {
     display: flex;
     flex-direction: column;

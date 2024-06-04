@@ -17,7 +17,7 @@
         }
     </style>
     
-  <script type="module" crossorigin src="/ICG_Project/assets/index-CVW0HH5t.js"></script>
+  <script type="module" crossorigin src="/ICG_Project/assets/index-CxCc9AtB.js"></script>
 </head>
 
 <body>
@@ -54,7 +54,8 @@
     <canvas class="webgl"></canvas> -->
     <!-- Start Page -->
     <div id="startPage" class="start-page">
-        <h1 id="first">Welcome to GuaxBowling!</h1>
+        <h1 id="first">Welcome to Guax Strike</h1>
+        <h1 id="first">Bowling!</h1>
         <div id="starting">
             <label id="colorLabel" for="colorPicker">Choose the color of your emotional support avatar</label>
             <input type="color" id="colorPicker" value="#ff0000">
@@ -65,7 +66,11 @@
     <!--Main Game Page (initially hidden) -->
     <div id="gamePage" class="game-page" style="display: none;">
         <div id="UI" class="UI">
-            <h1>GuaxBowling</h1>
+            <h1>Guax Strike Bowling</h1>
+            <div id="gameOverPopup" style="display: none; align-content: center;">
+                <p id="message">Game Over!</p>
+                <button id="restartButton">Restart</button>
+            </div>            
             <div class="items">
                 <div class="strength">
                     <span>Shooting power</span>
@@ -73,16 +78,12 @@
                         <div id="barStrength"></div>
                     </div>
                 </div>
-                <div class="controls">
-                    <span>Space to start a shot, space again to throw</span>
-                    <span>Left and Right arrows to move shot</span>
-                    <span>Up and Down arrow to rotate shot</span>
-                </div>
             </div>
+            <div id="throwNumber">Throw: 1</div>
             <div class="credit">
-                <span>Credits</span>
-                <a href="https://www.linkedin.com/in/mathisangibaud/"><span>Mathis Angibaud</span></a>
-                <a href="https://www.linkedin.com/in/pierre-secher/"><span>Pierre Secher</span></a>
+                <span>Space to start a shot, space again to throw</span>
+                <span>Left and Right arrows to move shot</span>
+                <span>Up and Down arrow to rotate shot</span>
             </div>
         </div>
         <canvas id="canvas" class="webgl"></canvas>

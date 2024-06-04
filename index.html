@@ -66,8 +66,10 @@
     <div id="gamePage" class="game-page" style="display: none;">
         <div id="UI" class="UI">
             <h1>Guax Strike Bowling</h1>
-            <!-- <div id="throwCount">Throw: 0</div>
-            <div id="gameMessage" style="display:none;"></div> -->
+            <div id="gameOverPopup" style="display: none; align-content: center;">
+                <p id="message">Game Over!</p>
+                <button id="restartButton">Restart</button>
+            </div>            
             <div class="items">
                 <div class="strength">
                     <span>Shooting power</span>
@@ -75,19 +77,12 @@
                         <div id="barStrength"></div>
                     </div>
                 </div>
-                <!-- <div class="controls">
-                    <span>Space to start a shot, space again to throw</span>
-                    <span>Left and Right arrows to move shot</span>
-                    <span>Up and Down arrow to rotate shot</span>
-                </div> -->
             </div>
+            <div id="throwNumber">Throw: 1</div>
             <div class="credit">
                 <span>Space to start a shot, space again to throw</span>
                 <span>Left and Right arrows to move shot</span>
                 <span>Up and Down arrow to rotate shot</span>
-                <!-- <span>Credits</span>
-                <a href="https://www.linkedin.com/in/mathisangibaud/"><span>Mathis Angibaud</span></a>
-                <a href="https://www.linkedin.com/in/pierre-secher/"><span>Pierre Secher</span></a> -->
             </div>
         </div>
         <canvas id="canvas" class="webgl"></canvas>

@@ -4,12 +4,6 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import GUI from 'lil-gui';
-import Stats from "three/examples/jsm/libs/stats.module.js";
-
-
-// import * as dat from 'dat.gui';
-
-// const gui = new dat.GUI();
 
 const sizes = {
     width: document.body.clientWidth,
@@ -18,37 +12,38 @@ const sizes = {
 
 class Bowling {
     constructor() {
+        //constructing the scene
         this.world = new CANNON.World();
         this.world.allowSleep = true;
         this.timeStep = 1 / 60;
         this.scene = new THREE.Scene();
         this.sceneObjects = [];
 
+        //pin settings
         this.pinOffset = 20;
         this.pinRows = 3;
 
         this.throwIndex = 0;
-        
+        this.maxThrows = 2;  // Maximum number of throws
 
+
+        //initializing the renderer
         const canvas = document.querySelector(".webgl")
-        // canvas.style.width = '100%';
-        // canvas.style.height = '100%';
-        // canvas.width = canvas.offsetWidth;
-        // canvas.height = canvas.offsetHeight;
 
-        // console.log(canvas);
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
             antialias: true,
         });
-        
+
         this.renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
         this.renderer.setSize(sizes.width, sizes.height);
         this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+        //loading the pins
         this.loadTexture();
 
+        //ball settings and loading
         const loaderBall = new THREE.TextureLoader();
         this.ballMaterial = loaderBall.load(
             './textures/bowling_ball.png',
@@ -57,37 +52,37 @@ class Bowling {
             }
         );
         this.ball = this.createSphere(this.ballMaterial);
-        this.ball.castShadow = true;
+        this.ball.mesh.castShadow = true;
+        this.ball.mesh.receiveShadow = true;
         this.ballThrown = false;
         this.ballStrength = -80;
         this.ballRotation = 0;
         this.waitingThrow;
         this.chargeShot = false;
 
+        //camera settings
         this.camera = this.createCamera();
         console.log(this.camera);
         console.log(this.renderer.domElement);
 
+        //controls settings
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.enableDamping = true; // Optional: for smoother camera movement
-        this.controls.enabled = true;        
-        
-        // this.UIHelper = this.createUIHelper();
+        this.controls.enableDamping = true;
+        this.controls.enabled = true;
 
-        // this.createBox(0, -0.4, -10, 1.28, 0.2, 22); // 1.28 official width
-        // this.light1 = this.createDirectionalLight(20, 20, -50);
-        // this.light2 = this.createDirectionalLight(-20, 20, -50);
-        // this.light3 = this.createAmbiantLight();
+        this.gameOverPopup = document.getElementById('gameOverPopup');
+        this.throwNumberElement = document.getElementById('throwNumber');
+        this.message = document.getElementById('message');
 
-        // this.initControl(this.ball);
-
-        // this.initCannon();
-        // this.initThree();
+        // Restart button event listener
+        document.getElementById('restartButton').addEventListener('click', () => {
+            location.reload(); // Reload the page to restart the game
+        });
 
         this.initScene();
     }
 
-    loadTexture() {
+    loadTexture() { //this function loads the pins models
         // instantiate a loader
         const loader = new OBJLoader();
 
@@ -113,7 +108,7 @@ class Bowling {
         );
     }
 
-    createUIHelper() {
+    createUIHelper() { //this function creates the UI helper
         const geometry = new THREE.BoxGeometry(.04, .01, 1.5);
         const material = new THREE.MeshBasicMaterial({ color: "#288bbd" });
         const mesh = new THREE.Mesh(geometry, material);
@@ -135,7 +130,7 @@ class Bowling {
         };
     }
 
-    createPins() {
+    createPins() { //this function sets the pins on the scene in the correct position
         const rowGap = 0.24;
         const colGap = 0.16;
 
@@ -151,6 +146,7 @@ class Bowling {
         this.createCylinder(colGap * 3, -0.1, -rowGap * 3);
     }
 
+    //this function deals with most of the pyhsics of the game
     initControl(object) {
         let strengthMultiplier;
 
@@ -173,11 +169,11 @@ class Bowling {
 
                         } else {
                             clearInterval(this.intervalStrength);
-                            strengthMultiplier = document.getElementById('barStrength').style.height;
-                            strengthMultiplier = -strengthMultiplier.substring(0, strengthMultiplier.length - 1);
+                            strengthMultiplier = document.getElementById('barStrength').style.height;//this gets the height of the bar to determine the strength of the throw
+                            strengthMultiplier = -strengthMultiplier.substring(0, strengthMultiplier.length - 1);//this removes the % from the height to get the strength
 
                             console.log(this.ballStrength + strengthMultiplier);
-                            object.body.applyImpulse(new CANNON.Vec3(0 + this.ballRotation, 0, this.ballStrength + strengthMultiplier), object.body.position);
+                            object.body.applyImpulse(new CANNON.Vec3(0 + this.ballRotation, 0, this.ballStrength + strengthMultiplier), object.body.position); //this applies the impulse calculated to the ball
                             this.ballThrown = true;
                             console.log('Ball thrown');
 
@@ -189,7 +185,7 @@ class Bowling {
                                 } catch (error) {
                                     console.error('Error during throw processing:', error);
                                 }
-                            }, 2000); // Corrected the string "5000" to number 5000
+                            }, 5000); // Corrected the string "5000" to number 5000
                         }
                         break;
 
@@ -238,6 +234,7 @@ class Bowling {
         this.controls.enabled = enable;
     }
 
+    //this function deals with the bar that shows the strength of the throw
     powerStrength() {
         var countingUp = 1;
         var i = 0;
@@ -255,6 +252,7 @@ class Bowling {
         this.intervalStrength = window.setInterval(count, 10);
     }
 
+    //this is the function that creates the ground, including loading the texture
     createBox(x, y, z, width, height, depth) {
         const shape = new CANNON.Box(new CANNON.Vec3(width / 2, height / 2, depth / 2));
         const body = new CANNON.Body({
@@ -265,11 +263,10 @@ class Bowling {
         this.world.addBody(body);
 
         const geometry = new THREE.BoxGeometry(width, height, depth);
-        // const material = new THREE.MeshPhongMaterial({ color: 0xffffff });
 
         const loader = new THREE.TextureLoader();
 
-        // load a resource
+        // load floor texture
         loader.load(
             './textures/floor.png',
             (texture) => {
@@ -302,6 +299,7 @@ class Bowling {
         );
     }
 
+    //this function creates a body for the pins and sets their position on the scene
     createCylinder(x, y, z) {
         const topDiameter = 0.020;
         const bottomDiameter = 0.055;
@@ -325,7 +323,7 @@ class Bowling {
         this.world.addBody(body);
 
         const geometry = new THREE.CylinderGeometry(topDiameter, bottomDiameter, 0.38, 10);
-        
+
         const material = new THREE.MeshPhongMaterial({ color: 0xffffff, wireframe: true });
 
         const mesh = new THREE.Mesh(geometry, material);
@@ -347,7 +345,8 @@ class Bowling {
             type: 'pin'
         };
     }
-    
+
+    //this function creates a sphere for the ball 
     createSphere(texture) {
         const shape = new CANNON.Sphere(0.11);
         const body = new CANNON.Body({
@@ -381,21 +380,24 @@ class Bowling {
         };
     }
 
+    //this function creates a directional light aiming at the ball
     createDirectionalLight(x, y, z) {
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(x, y, z);
         light.castShadow = true;
         this.scene.add(light);
-        light.target = this.ball.mesh;
+        light.target = this.ball.mesh; // Ensure the light points at the ball
         return light;
     }
 
+    //this function creates an ambient light
     createAmbiantLight() {
         const light = new THREE.AmbientLight(0xaeaeae, 0.5);
         this.scene.add(light);
         return light;
     }
 
+    //this function creates a directional light aiming at the avatar
     createDirectionalLightAvatar(model) {
         const light = new THREE.DirectionalLight(0xffffff, 3);
         light.position.set(5, 5, 5);  // Position the light to illuminate the avatar
@@ -405,6 +407,7 @@ class Bowling {
         return light;
     }
 
+    //this function creates a camera
     createCamera() {
         const camera = new THREE.PerspectiveCamera(30, sizes.width / sizes.height, 1, 100);
         camera.position.z = 5;
@@ -414,7 +417,8 @@ class Bowling {
         this.scene.add(camera);
         return camera;
     }
-    
+
+    //this function updates the physics of the game
     updatePhysics() {
         // Step the physics world
         this.world.step(this.timeStep);
@@ -467,6 +471,7 @@ class Bowling {
         });
     }
 
+    //this function counts the number of pins on the scene
     pinsOnScene() {
         let count = 0;
         this.sceneObjects.forEach((el) => {
@@ -477,10 +482,10 @@ class Bowling {
                 }
             }
         });
-        return count;  
+        return count;
     }
-    
 
+    //this function counts 10 minus the number of pins on the scene to get the score
     countPins() {
         let count = 0;
         this.sceneObjects.forEach((el) => {
@@ -491,6 +496,7 @@ class Bowling {
         return 10 - count;
     }
 
+    //this function deletes all the pins on the scene
     deleteAllPins() {
         this.sceneObjects.forEach((el) => {
             if (el.type === 'pin') {
@@ -502,6 +508,7 @@ class Bowling {
         });
     }
 
+    //this function checks the pins on the scene and changes the expression of the avatar accordingly 
     checkPins() {
 
         // Reset ball position
@@ -518,39 +525,87 @@ class Bowling {
 
         const remainingPins = this.pinsOnScene();
         console.log('Remaining pins:', remainingPins);
-        if (remainingPins === 0) {
+        this.throwIndex++;
+        this.updateThrowNumberUI();
+        if (remainingPins === 0) { // All pins knocked down
             // Change expression to 'Surprise'
             this.changeExpression('Surprised', 1);
-            
+
             // After setting the expression, trigger the jump
             this.fadeToAction('Jump', 0.2);
             this.mixer.addEventListener('finished', () => {
-                this.mixer.removeEventListener('finished', () => {});
+                this.mixer.removeEventListener('finished', () => { });
                 // Once the jump is finished, start dancing
                 this.fadeToAction('ThumbsUp', 0.2);
                 this.mixer.addEventListener('finished', () => {
-                    this.mixer.removeEventListener('finished', () => {});
+                    this.mixer.removeEventListener('finished', () => { });
                     // Once the jump is finished, start dancing
                     this.fadeToAction('Dance', 0.2);
                 });
             });
-        } else {
+            this.endGame(true);
+
+        } else if (this.throwIndex >= this.maxThrows) {
             // Change expression to 'Surprise'
             this.changeExpression('Sad', 1);
-            
+
             // After setting the expression, trigger the jump
             this.fadeToAction('No', 0.2);
             this.mixer.addEventListener('finished', () => {
-                this.mixer.removeEventListener('finished', () => {});
+                this.mixer.removeEventListener('finished', () => { });
                 // Once the jump is finished, start dancing
                 this.fadeToAction('Death', 0.2);
             });
+            this.resetBallPosition();
+            this.endGame(false);
+        } else { // Some pins still standing
+            // Change expression to 'Surprise'
+            this.changeExpression('Sad', 1);
+
+            // After setting the expression, trigger the jump
+            this.fadeToAction('No', 0.2);
+            this.mixer.addEventListener('finished', () => {
+                this.mixer.removeEventListener('finished', () => { });
+                // Once the jump is finished, start dancing
+                this.fadeToAction('Death', 0.2);
+            });
+            this.resetBallPosition();
+
         }
     }
 
-    avatar(){
-        const container = document.createElement( 'div' );
-        document.body.appendChild( container );
+    updateThrowNumberUI() {
+
+        this.throwNumberElement.innerText = `Throw: ${this.throwIndex + 1}`;
+    }
+
+    endGame(allPinsKnockedDown) {
+        if (!allPinsKnockedDown) {
+            this.message.innerText = `Game Over!`;
+            this.gameOverPopup.style.display = 'block';
+            this.throwNumberElement.innerText = `Throw: ${this.throwIndex - 1}`;
+        } else {
+            this.message.innerText = `You won!`;
+            this.throwNumberElement.innerText = `Throw: ${this.throwIndex}`;
+            this.gameOverPopup.style.display = 'block';
+        }
+    }
+
+    resetBallPosition() {
+        this.ball.body.position.set(0, 0, 0);
+        this.ball.body.velocity.set(0, 0, 0);
+        this.ball.body.angularVelocity.set(0, 0, 0);
+        this.ballRotation = 0;
+        this.chargeShot = false;
+        this.UIHelper.body.rotation.y = 0;
+        this.UIHelper.body.position.x = 0;
+        document.getElementById('barStrength').style.height = '0%';
+    }
+
+    //this function loads the avatar
+    avatar() {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
 
         const loader = new GLTFLoader();
         loader.load(
@@ -565,29 +620,8 @@ class Bowling {
                 this.scene.add(this.model);
                 console.log('Model loaded successfully');
 
-                // Define the original yellow color you want to change (use an approximation if exact isn't known)
-                const originalYellow = new THREE.Color(0xC9923A); // Approximate yellow
-                const colorThreshold = 0.1; // Adjust threshold to be more or less strict
-
-                this.model.traverse((child) => {
-                    if (child.isMesh && child.material && child.material.color) {
-                        let hsl = {}; // Object to store hue, saturation, and lightness
-                        child.material.color.getHSL(hsl); // Safely get the HSL values
-                
-                        let targetHSL = {};
-                        originalYellow.getHSL(targetHSL); // Get HSL of the target yellow color
-                
-                        // Check if the color is within the threshold of yellow
-                        if (hsl.h >= targetHSL.h - colorThreshold && hsl.h <= targetHSL.h + colorThreshold && hsl.s > 0.5) {
-                            // Change to a new color, e.g., red
-                            child.material.color.set(0xff0000);
-                        }
-                    }
-                });
                 // Add directional light to the avatar
                 this.createDirectionalLightAvatar(this.model);
-
-                // this.createGUI( this.model, gltf.animations );
 
             },
             (xhr) => {
@@ -597,12 +631,13 @@ class Bowling {
                 console.error('Failed to load model:', error.message);
             }
         );
-        
-        
-        container.appendChild( this.renderer.domElement );
+
+
+        container.appendChild(this.renderer.domElement);
 
     }
 
+    //this function changes the color of the avatar
     avatar_color(model, color) {
         const originalYellow = new THREE.Color(0xC9923A); // Approximate yellow color
         const colorThreshold = 0.1; // Threshold for color adjustment
@@ -616,16 +651,17 @@ class Bowling {
                 originalYellow.getHSL(targetHSL);
 
                 if (hsl.h >= targetHSL.h - colorThreshold && hsl.h <= targetHSL.h + colorThreshold && hsl.s > 0.5) {
-                    child.material.color.set(color); // Change color to red
+                    child.material.color.set(color); //Here the user can choose the color of the avatar
                 }
             }
         });
     }
 
+    //this function creates the GUI for the avatar so the user can interact with it
     createGUI(model, animations) {
         const states = ['Idle', 'Walking', 'Running', 'Dance', 'Death', 'Sitting', 'Standing'];
         const emotes = ['Jump', 'Yes', 'No', 'Wave', 'Punch', 'ThumbsUp'];
-    
+
         this.gui = new GUI();
         this.mixer = new THREE.AnimationMixer(model);
         this.actions = {};
@@ -637,24 +673,24 @@ class Bowling {
             console.log('Action created:', action);
             this.actions[animation.name] = action;
 
-            if (emotes.indexOf(animation.name) >=0 || states.indexOf(animation.name) >= 4) {
+            if (emotes.indexOf(animation.name) >= 0 || states.indexOf(animation.name) >= 4) {
                 console.log(animation.name);
 
                 action.clampWhenFinished = true;
                 action.loop = THREE.LoopOnce;
             }
         });
-    
+
         // States
         const statesFolder = this.gui.addFolder('States');
         const clipCtrl = statesFolder.add(this.api, 'state').options(states);
-        clipCtrl.onChange( function () {
+        clipCtrl.onChange(function () {
             console.log('State changed to:', this.api.state);
-            this.fadeToAction( this.api.state, 0.2 );
+            this.fadeToAction(this.api.state, 0.2);
 
-        }.bind(this) );
+        }.bind(this));
         statesFolder.open();
-    
+
         // Emotes
         const emoteFolder = this.gui.addFolder('Emotes');
         emotes.forEach(emote => {
@@ -662,7 +698,7 @@ class Bowling {
                 console.log('Emote triggered:', emote);
                 this.fadeToAction(emote, 0.2);
                 this.mixer.addEventListener('finished', () => {
-                    this.mixer.removeEventListener('finished', () => {});
+                    this.mixer.removeEventListener('finished', () => { });
                     console.log('Animation finished');
                     this.fadeToAction(this.api.state, 0.2);
                 });
@@ -670,7 +706,7 @@ class Bowling {
             emoteFolder.add(this.api, emote);
         });
         emoteFolder.open();
-    
+
         // Expressions
         const face = model.getObjectByName('Head_4');
         if (face && face.morphTargetDictionary) {
@@ -681,23 +717,25 @@ class Bowling {
             });
             expressionFolder.open();
         }
-    
+
         // Activate initial action
         this.activeAction = this.actions['Idle'];
         this.activeAction.play();
     }
-    
+
+    //this function fades the action of the avatar
     fadeToAction(name, duration) {
         const previousAction = this.activeAction;
         const activeAction = this.actions[name];
-    
+
         if (previousAction !== activeAction) {
             previousAction.fadeOut(duration);
             activeAction.reset().setEffectiveTimeScale(1).setEffectiveWeight(1).fadeIn(duration).play();
             this.activeAction = activeAction;
         }
-    }   
+    }
 
+    //this function allows to change the expression of the avatar
     changeExpression(expressionName, intensity) {
         const face = this.model.getObjectByName('Head_4');  // Ensure this matches your model's head mesh name
         if (face && face.morphTargetDictionary) {
@@ -711,35 +749,23 @@ class Bowling {
         }
     }
 
+    //this function initializes the cannon
     initCannon() {
         this.world.gravity.set(0, -9, 0);
         this.world.broadphase = new CANNON.NaiveBroadphase();
         this.world.solver.iterations = 10;
     }
 
+    //this function initializes the renderer
     initThree() {
         this.renderer.setSize(sizes.width, sizes.height);
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
     }
 
+    // this function initializes the scene and its elements
     initScene() {
         this.clock = new THREE.Clock();
-
-        // // Assuming your renderer has been initialized
-        // const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
-        // pmremGenerator.compileEquirectangularShader();
-
-        // const loader = new THREE.TextureLoader();
-        // loader.load('./textures/space.jpg', (texture) => {
-        //     const envMap = pmremGenerator.fromEquirectangular(texture).texture;
-        //     this.scene.environment = envMap;  // Set as the environment map for reflections
-        //     pmremGenerator.dispose();  // Clean up resources used by the PMREMGenerator
-
-        //     // Optionally set the same texture as the background
-        //     this.scene.background = texture; 
-        // });
-
         this.loadTexture();
         this.UIHelper = this.createUIHelper();
         this.createBox(0, -0.4, -10, 1.28, 0.2, 22);
@@ -754,31 +780,21 @@ class Bowling {
 
 }
 
-// document.getElementById('startButton').addEventListener('click', function() {
-//     // Hide the start page
-//     document.getElementById('startPage').style.display = 'none';
-//     // Show the main game page
-//     document.getElementById('gamePage').style.display = 'block';
-
-//     // // Initialize the game elements here if necessary
-//     // const selectedColor = document.getElementById('colorPicker').value;
-//     // initializeGame(selectedColor); // Function to initialize game
-// });
-
-
 const bowling = new Bowling();
 
-document.getElementById('startButton').addEventListener('click', function() {
+// Start button event listener to initialize game with the selected avatar color
+document.getElementById('startButton').addEventListener('click', function () {
 
     document.getElementById('startPage').style.display = 'none';
     document.getElementById('gamePage').style.display = 'block';
     document.getElementById('canvas').style.display = 'block';
     document.getElementById('UI').style.display = 'block';
-    
+
     const selectedColor = document.getElementById('colorPicker').value;
     initializeGame(selectedColor); // Function to initialize game with selected avatar color
 });
 
+// Function to initialize game
 function initializeGame(selectedColor) {
 
     if (bowling.model && bowling.animations && !bowling.gui) { // Ensure model and animations are loaded
@@ -789,15 +805,12 @@ function initializeGame(selectedColor) {
     }
     // Assuming you have a function to set the avatar's color
     bowling.avatar_color(bowling.model, selectedColor);
-    
+
     // Start the animation or any other game initialization logic here
     animate();
 }
 
-// const controls = new OrbitControls(bowling.camera, bowling.renderer.domElement);
-// controls.enabled = true;
-// Attach event listener once outside the animate loop
-
+// Animation loop
 function animate() {
     requestAnimationFrame(animate);
     const delta = bowling.clock.getDelta(); // Assuming you have a clock for delta times
@@ -806,9 +819,8 @@ function animate() {
     }
     if (bowling.controls.enabled) {
         bowling.controls.update();
-    }    
+    }
     bowling.updatePhysics();
     bowling.renderer.render(bowling.scene, bowling.camera);
 }
 console.log('Animation loop started');
-
